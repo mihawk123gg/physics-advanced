@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Physics Test — Admin Dashboard</title>
+<style>
+:root{--bg:#071018;--panel:#0d1722;--panel2:#111e2b;--line:#203141;--text:#eef6ff;--muted:#91a4b7;--accent:#5eead4;--danger:#ff6575;--warn:#f7c948}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#102131 0,#071018 42%,#050b10 100%);color:var(--text);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;min-height:100vh}
+button,input{font:inherit}.hidden{display:none!important}
+.wrap{max-width:1250px;margin:auto;padding:28px 18px 60px}
+.card{background:rgba(13,23,34,.9);border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.login{max-width:420px;margin:9vh auto;padding:34px}.eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-weight:700}.login h1{margin:8px 0 8px;font-size:25px}.login p{color:var(--muted);font-size:13px;line-height:1.6}.field{margin:14px 0}.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:7px}.field input{width:100%;padding:12px 13px;border-radius:10px;border:1px solid var(--line);background:#08121b;color:var(--text);outline:none}.field input:focus{border-color:var(--accent)}
+.btn{border:0;border-radius:10px;padding:11px 15px;cursor:pointer;font-weight:700}.primary{background:var(--accent);color:#06201c}.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}.danger{color:var(--danger)}.error{color:var(--danger);font-size:12px;min-height:18px;margin:8px 0}
+.header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}.title{font-size:24px;font-weight:800}.sub{font-size:12px;color:var(--muted);margin-top:3px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}.stat{padding:17px}.label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}.value{font-size:25px;font-weight:800;margin-top:7px}
+.toolbar{padding:13px;display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select{padding:10px 11px;border-radius:9px;border:1px solid var(--line);background:#08121b;color:var(--text);outline:none}.toolbar .grow{flex:1;min-width:200px}
+.table-card{overflow:hidden}.tablewrap{overflow-x:auto;overflow-y:visible}.table{width:100%;border-collapse:separate;border-spacing:0;min-width:1180px;table-layout:fixed}.table th{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);text-align:left;background:#0a141e;position:sticky;top:0;z-index:2;font-weight:700}.table th,.table td{padding:13px 12px;border-bottom:1px solid rgba(255,255,255,.06);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.table th:nth-child(1),.table td:nth-child(1){width:170px}.table th:nth-child(2),.table td:nth-child(2){width:85px}.table th:nth-child(3),.table td:nth-child(3){width:155px}.table th:nth-child(4),.table td:nth-child(4){width:105px}.table th:nth-child(5),.table td:nth-child(5){width:75px}.table th:nth-child(6),.table td:nth-child(6),.table th:nth-child(7),.table td:nth-child(7),.table th:nth-child(8),.table td:nth-child(8),.table th:nth-child(9),.table td:nth-child(9){width:82px;text-align:center}.table th:nth-child(10),.table td:nth-child(10){width:90px}.table th:nth-child(11),.table td:nth-child(11){width:78px;text-align:center}.table tbody tr:nth-child(even){background:rgba(255,255,255,.018)}.table tbody tr:hover{background:rgba(94,234,212,.06)}.table td{font-size:12px}.student-cell{font-weight:700;color:#fff}.seat-badge{display:inline-flex;align-items:center;justify-content:center;min-width:52px;padding:5px 8px;border-radius:7px;background:#162634;border:1px solid #294052;font-weight:700}.score-badge{display:inline-flex;align-items:center;justify-content:center;min-width:72px;padding:5px 8px;border-radius:7px;background:rgba(94,234,212,.08);border:1px solid rgba(94,234,212,.18);font-weight:800}.pct{font-weight:700}.stat{min-height:94px}.score{font-weight:800}.pos{color:var(--accent)}.neg{color:var(--danger)}.zero{color:var(--muted)}.view{padding:7px 10px;font-size:12px}
+.empty{text-align:center;color:var(--muted);padding:40px}
+.status{margin:0 0 12px;padding:10px 12px;border-radius:10px;background:#0a1620;color:var(--muted);font-size:12px}.status.ok{color:var(--accent)}.status.err{color:var(--danger)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:18px;z-index:10}.modalbox{max-width:850px;width:100%;max-height:90vh;overflow:auto;padding:22px}.modalhead{display:flex;justify-content:space-between;gap:15px;align-items:center}.modal h2{margin:0;font-size:20px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}.item{padding:12px;background:#09141e;border:1px solid var(--line);border-radius:10px}.item small{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;margin-bottom:4px}.item strong{font-size:16px}.qa{width:100%;border-collapse:collapse;font-size:12px}.qa th,.qa td{padding:9px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left}.correct{color:var(--accent)}.incorrect{color:var(--danger)}.unattempted{color:var(--muted)}
+@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.header{align-items:flex-start;flex-direction:column}.toolbar{padding:11px}.toolbar input,.toolbar select{min-width:150px}.table{min-width:1180px}}
+</style>
+</head>
+<body>
+<div id="loginPage" class="wrap">
+  <div class="card login">
+    <div class="eyebrow">Restricted Area</div>
+    <h1>Physics Test Admin</h1>
+    <p>Sign in with the Firebase admin account. Students do not have access to this dashboard.</p>
+    <div class="field"><label>Email</label><input id="email" type="email" autocomplete="username"></div>
+    <div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password"></div>
+    <div id="loginError" class="error"></div>
+    <button id="loginBtn" class="btn primary" style="width:100%">Sign in</button>
+  </div>
+</div>
+
+<div id="app" class="wrap hidden">
+  <div class="header">
+    <div><div class="title">📊 Physics Test Results</div><div class="sub">Units, Dimensions, Errors & Significant Figures · Firestore</div></div>
+    <button id="logout" class="btn ghost">Log out</button>
+  </div>
+  <div id="status" class="status">Loading…</div>
+  <div class="stats">
+    <div class="card stat"><div class="label">Total Attempts</div><div id="total" class="value">0</div></div>
+    <div class="card stat"><div class="label">Average Score</div><div id="avg" class="value">0 / 60</div></div>
+    <div class="card stat"><div class="label">Highest Score</div><div id="high" class="value">0 / 60</div></div>
+    <div class="card stat"><div class="label">Lowest Score</div><div id="low" class="value">0 / 60</div></div>
+  </div>
+  <div class="card toolbar">
+    <input id="nameSearch" class="grow" placeholder="Search student name…">
+    <input id="seatSearch" placeholder="Seat No.">
+    <select id="sort"><option value="new">Newest first</option><option value="old">Oldest first</option><option value="high">Score high → low</option><option value="low">Score low → high</option></select>
+    <button id="refresh" class="btn primary">↻ Refresh</button>
+    <button id="csv" class="btn ghost">⬇ Export CSV</button>
+  </div>
+  <div class="card table-card"><div class="tablewrap">
+    <table class="table">
+      <thead><tr>
+        <th>Student Name</th><th>Seat No.</th><th>Date & Time</th><th>Score / 60</th><th>%</th>
+        <th>Attempted</th><th>Correct</th><th>Incorrect</th><th>Unattempted</th><th>Time</th><th></th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    </div><div id="empty" class="empty hidden">No submissions found.</div>
+  </div>
+</div>
+
+<div id="modal" class="modal hidden">
+  <div class="card modalbox">
+    <div class="modalhead"><h2 id="mTitle">Result Details</h2><button id="close" class="btn ghost">Close</button></div>
+    <div class="grid">
+      <div class="item"><small>Score</small><strong id="mScore">—</strong></div>
+      <div class="item"><small>Percentage</small><strong id="mPct">—</strong></div>
+      <div class="item"><small>Attempted</small><strong id="mAttempted">—</strong></div>
+      <div class="item"><small>Correct</small><strong id="mCorrect">—</strong></div>
+      <div class="item"><small>Incorrect</small><strong id="mIncorrect">—</strong></div>
+      <div class="item"><small>Unattempted</small><strong id="mUnattempted">—</strong></div>
+      <div class="item"><small>Time Taken</small><strong id="mTime">—</strong></div>
+      <div class="item"><small>Submitted</small><strong id="mDate">—</strong></div>
+    </div>
+    <h3>Question-wise Result</h3>
+    <table class="qa"><thead><tr><th>Q</th><th>Student Answer</th><th>Correct Answer</th><th>Status</th></tr></thead><tbody id="qaBody"></tbody></table>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBmpu50zvmHs7JkrUDYpr2XL8qACpTxQPY",
+  authDomain: "units-and-dimensions-advanced.firebaseapp.com",
+  projectId: "units-and-dimensions-advanced",
+  storageBucket: "units-and-dimensions-advanced.firebasestorage.app",
+  messagingSenderId: "918391376879",
+  appId: "1:918391376879:web:e1dd3de1aa28b6eba4441a",
+  measurementId: "G-NGRF5BB3CQ"
+};
+const ADMIN_UID = "cXC2MtZI4XaJ3D3P0za4ZNqWeBP2";
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let rows = [];
+const $ = id => document.getElementById(id);
+
+function dateOf(v){
+  if(!v) return null;
+  if(typeof v.toDate === "function") return v.toDate();
+  if(typeof v.seconds === "number") return new Date(v.seconds*1000);
+  const d = new Date(v); return isNaN(d) ? null : d;
+}
+function fmt(v){const d=dateOf(v);return d?d.toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"}):"—"}
+function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function scoreClass(s){return s>0?"pos":s<0?"neg":"zero"}
+
+async function load(){
+  $("status").textContent="Loading results from Firestore…"; $("status").className="status";
+  try{
+    const snap=await getDocs(collection(db,"testResults"));
+    rows=snap.docs.map(d=>({id:d.id,...d.data()}));
+    render();
+    $("status").textContent=`Connected · ${rows.length} submission(s)`;
+    $("status").className="status ok";
+  }catch(e){
+    console.error(e);
+    $("status").textContent="Could not load results: "+(e.code||e.message);
+    $("status").className="status err";
+  }
+}
+function filtered(){
+  const n=$("nameSearch").value.trim().toLowerCase(), s=$("seatSearch").value.trim();
+  let a=rows.filter(r=>(!n||String(r.studentName||"").toLowerCase().includes(n))&&(!s||String(r.seatNo??"").includes(s)));
+  const mode=$("sort").value;
+  a.sort((x,y)=>{
+    if(mode==="high"||mode==="low") return ((Number(x.score)||0) - (Number(y.score)||0))*(mode==="high"?-1:1);
+    const dx=dateOf(x.submittedAt)?.getTime()||0,dy=dateOf(y.submittedAt)?.getTime()||0;
+    return (dy-dx)*(mode==="new"?1:-1);
+  });
+  return a;
+}
+function render(){
+  const a=filtered();
+  $("tbody").innerHTML=a.map((r,i)=>`<tr>
+    <td class="student-cell" title="${escapeHtml(r.studentName)}">${escapeHtml(r.studentName)}</td>
+    <td><span class="seat-badge">${escapeHtml(r.seatNo)}</span></td>
+    <td title="${escapeHtml(fmt(r.submittedAt))}">${fmt(r.submittedAt)}</td>
+    <td><span class="score-badge ${scoreClass(Number(r.score))}">${Number(r.score)||0} / ${Number(r.totalMarks)||60}</span></td>
+    <td class="pct">${Number(r.percentage||0).toFixed(1)}%</td>
+    <td>${Number(r.attempted)||0}</td><td class="pos">${Number(r.correct)||0}</td><td class="neg">${Number(r.incorrect)||0}</td><td>${Number(r.unattempted)||0}</td>
+    <td>${escapeHtml(r.timeTaken||"—")}</td><td><button class="btn ghost view" data-i="${rows.indexOf(r)}">View</button></td>
+  </tr>`).join("");
+  $("empty").classList.toggle("hidden",a.length!==0);
+  const scores=rows.map(r=>Number(r.score)).filter(Number.isFinite);
+  $("total").textContent=rows.length;
+  $("avg").textContent=scores.length?(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1)+" / 60":"0 / 60";
+  $("high").textContent=scores.length?Math.max(...scores)+" / 60":"0 / 60";
+  $("low").textContent=scores.length?Math.min(...scores)+" / 60":"0 / 60";
+  document.querySelectorAll(".view").forEach(b=>b.onclick=()=>show(rows[Number(b.dataset.i)]));
+}
+function show(r){
+  $("mTitle").textContent=`${r.studentName||"Student"} · Seat ${r.seatNo??"—"}`;
+  $("mScore").textContent=`${r.score??0} / ${r.totalMarks??60}`;
+  $("mPct").textContent=`${Number(r.percentage||0).toFixed(1)}%`;
+  $("mAttempted").textContent=r.attempted??0; $("mCorrect").textContent=r.correct??0; $("mIncorrect").textContent=r.incorrect??0; $("mUnattempted").textContent=r.unattempted??0;
+  $("mTime").textContent=r.timeTaken||"—"; $("mDate").textContent=fmt(r.submittedAt);
+  const b=Array.isArray(r.breakdown)?r.breakdown:[];
+  $("qaBody").innerHTML=b.map(q=>`<tr><td>${q.qNo??"—"}</td><td>${escapeHtml(q.studentAnswer)}</td><td>${escapeHtml(q.correctAnswer)}</td><td class="${String(q.status||"").toLowerCase()}">${escapeHtml(q.status)}</td></tr>`).join("");
+  $("modal").classList.remove("hidden");
+}
+function exportCsv(){
+  const headers=["Student Name","Seat No","Date & Time","Score","Total Marks","Percentage","Attempted","Correct","Incorrect","Unattempted","Time Taken"];
+  const lines=[headers,...filtered().map(r=>[r.studentName,r.seatNo,fmt(r.submittedAt),r.score,r.totalMarks,r.percentage,r.attempted,r.correct,r.incorrect,r.unattempted,r.timeTaken])];
+  const csv=lines.map(a=>a.map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(",")).join("\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download="physics-test-results.csv";a.click();URL.revokeObjectURL(url);
+}
+$("loginBtn").onclick=async()=>{try{$("loginError").textContent="";await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value); }catch(e){$("loginError").textContent="Login failed: "+(e.code||"invalid credentials")}};
+$("password").onkeydown=e=>{if(e.key==="Enter")$("loginBtn").click()};
+$("logout").onclick=()=>signOut(auth);
+$("refresh").onclick=load;$("csv").onclick=exportCsv;$("nameSearch").oninput=render;$("seatSearch").oninput=render;$("sort").onchange=render;
+$("close").onclick=()=>$("modal").classList.add("hidden");$("modal").onclick=e=>{if(e.target.id==="modal")$("modal").classList.add("hidden")};
+
+onAuthStateChanged(auth,user=>{
+  if(user && user.uid===ADMIN_UID){$("loginPage").classList.add("hidden");$("app").classList.remove("hidden");load();}
+  else if(user){signOut(auth);$("loginPage").classList.remove("hidden");$("app").classList.add("hidden");$("loginError").textContent="This account is not authorized as admin.";}
+  else{$("loginPage").classList.remove("hidden");$("app").classList.add("hidden");}
+});
+</script>
+</body>
+</html>
