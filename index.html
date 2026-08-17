@@ -1206,6 +1206,7 @@
   }
 
   let firebaseHandlesPromise = null;
+  let firebaseAuthReady = false;
 
   // Lazily loads the Firebase modular SDK from the CDN and initializes
   // the app + Firestore, only if FIREBASE_CONFIG has been filled in.
@@ -1221,6 +1222,10 @@
           ]);
           const app = initializeApp(FIREBASE_CONFIG);
           const db = getFirestore(app);
+      const auth = getAuth(app);
+      await signInAnonymously(auth);
+      if (!auth.currentUser) throw new Error('Anonymous authentication failed');
+      firebaseAuthReady = true;
           return { db, collection, addDoc, getDocs, serverTimestamp };
         } catch (e) {
           console.error("[firebase] Failed to load/initialize Firebase SDK:", e);
@@ -1248,36 +1253,9 @@
       console.error("[submitTestData] Firebase write failed, falling back:", e);
     }
 
-    // 2) Fall back to Claude's shared artifact storage (only works
-    //    while this page is viewed inside claude.ai). No server clock
-    //    is available here, so submittedAt keeps the client ISO string
-    //    already set on `data`.
-    try {
-      let existing = [];
-      try {
-        const res = await window.storage.get(SUBMISSIONS_KEY, true);
-        existing = res ? JSON.parse(res.value) : [];
-      } catch (e) {
-        existing = []; // key doesn't exist yet — first submission
-      }
-      existing.push(data);
-      await window.storage.set(SUBMISSIONS_KEY, JSON.stringify(existing), true);
-      return { ok: true, backend: "shared-storage" };
-    } catch (e) {
-      console.error("[submitTestData] Failed to write to shared storage:", e);
-    }
-
-    // 3) Last-resort local backup so a submission is never silently
-    //    lost even if both of the above are unavailable.
-    try {
-      const queueKey = "physicsTestSubmissionQueueFallback";
-      const existing = JSON.parse(localStorage.getItem(queueKey) || "[]");
-      existing.push(data);
-      localStorage.setItem(queueKey, JSON.stringify(existing));
-      return { ok: false, backend: "local-fallback" };
-    } catch (e2) {
-      return { ok: false, backend: "none" };
-    }
+    // Firebase is the permanent backend. Do not silently fall back to
+    // browser/Claude storage because the admin dashboard must reflect Firestore.
+    return { ok: false, backend: "firebase-error" };
   }
 
   function formatTimeTaken(seconds){
@@ -1319,7 +1297,13 @@
       submittedAt: new Date().toISOString()
     };
 
-    await submitTestData(submission);
+    const saveResult = await submitTestData(submission);
+    if (!saveResult.ok) {
+      submitting = false;
+      testActive = true;
+      alert("Result could not be saved to Firebase. Please contact the administrator before closing this page.");
+      return;
+    }
 
     exitFullscreenSafely();
     document.body.classList.remove('locked');
