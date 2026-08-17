@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>UNITS, DIMENSIONS, ERRORS & SIG. FIGS — PHYSICS TEST</title>
+<style>
+  :root{
+    --bg-0:#070b12;
+    --bg-1:#0c131e;
+    --panel:rgba(18,28,42,0.55);
+    --panel-border:rgba(120,170,255,0.14);
+    --grid-line:rgba(120,170,255,0.06);
+    --teal:#5eead4;
+    --amber:#f0b429;
+    --danger:#ff5d6c;
+    --text-hi:#eaf2ff;
+    --text-mid:#9fb2c9;
+    --text-low:#5c7089;
+    --mono:'JetBrains Mono','Courier New',monospace;
+    --sans:'Sora','Segoe UI',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 15% 8%, rgba(94,234,212,0.06), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(240,180,41,0.05), transparent 40%),
+      linear-gradient(180deg, var(--bg-0), var(--bg-1));
+    background-attachment:fixed;
+    color:var(--text-hi);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size:42px 42px;
+    pointer-events:none;
+    z-index:0;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 20%, black 40%, transparent 90%);
+  }
+  #app{position:relative; z-index:1; min-height:100vh; display:flex; flex-direction:column;}
+
+  /* ===== disable selection / interaction during test ===== */
+  body.locked{
+    -webkit-user-select:none; -moz-user-select:none; user-select:none;
+  }
+
+  ::selection{ background:rgba(94,234,212,0.25); }
+
+  .glass{
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    border-radius:18px;
+    box-shadow:0 20px 60px -20px rgba(0,0,0,0.6);
+  }
+
+  /* ===== Dimensional bracket signature motif ===== */
+  .bracket-mark{
+    font-family:var(--mono);
+    color:var(--teal);
+    letter-spacing:2px;
+    opacity:0.85;
+  }
+  .bracket-row{
+    display:flex; gap:10px; justify-content:center; margin-bottom:18px;
+    font-family:var(--mono); font-size:13px; color:var(--text-low);
+  }
+  .bracket-row span{
+    padding:3px 10px; border:1px solid var(--panel-border); border-radius:8px;
+    animation:pulseDim 3.2s ease-in-out infinite;
+  }
+  .bracket-row span:nth-child(2){animation-delay:.3s;}
+  .bracket-row span:nth-child(3){animation-delay:.6s;}
+  @keyframes pulseDim{
+    0%,100%{color:var(--text-low); border-color:var(--panel-border);}
+    50%{color:var(--teal); border-color:rgba(94,234,212,0.35);}
+  }
+
+  /* ===== Screens ===== */
+  .screen{
+    flex:1; width:100%;
+    display:flex; align-items:center; justify-content:center;
+    padding:24px;
+    animation:fadeIn .5s ease;
+  }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+  .hidden{display:none !important;}
+
+  /* ===== Registration ===== */
+  .reg-card{
+    width:100%; max-width:460px;
+    padding:44px 38px;
+    text-align:center;
+  }
+  .reg-eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:3px;
+    color:var(--amber); text-transform:uppercase; margin-bottom:10px;
+  }
+  .reg-title{
+    font-size:26px; font-weight:700; margin:0 0 6px;
+    letter-spacing:0.5px;
+  }
+  .reg-sub{
+    color:var(--text-mid); font-size:14px; margin-bottom:30px; line-height:1.6;
+  }
+  .field-label{
+    text-align:left; font-size:12px; color:var(--text-mid);
+    letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; display:block;
+  }
+  #studentName{
+    width:100%; padding:14px 16px; border-radius:12px;
+    background:rgba(7,11,18,0.6); border:1px solid var(--panel-border);
+    color:var(--text-hi); font-size:16px; font-family:var(--sans);
+    outline:none; transition:border-color .2s, box-shadow .2s;
+  }
+  #studentName:focus{ border-color:var(--teal); box-shadow:0 0 0 3px rgba(94,234,212,0.12); }
+
+  .seat-box{
+    margin-top:22px; padding:18px; border-radius:14px;
+    background:rgba(94,234,212,0.06); border:1px dashed rgba(94,234,212,0.35);
+    display:none;
+  }
+  .seat-box.show{display:block; animation:fadeIn .4s ease;}
+  .seat-label{font-size:11px; letter-spacing:2px; color:var(--text-mid); text-transform:uppercase;}
+  .seat-value{font-family:var(--mono); font-size:32px; color:var(--teal); font-weight:700; margin-top:4px; letter-spacing:4px;}
+  .seat-name{font-size:14px; color:var(--text-hi); margin-top:10px;}
+
+  .btn{
+    font-family:var(--sans); font-weight:600; font-size:15px;
+    padding:14px 28px; border-radius:12px; border:none; cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+  }
+  .btn:active{ transform:scale(0.97); }
+  .btn-primary{
+    background:linear-gradient(135deg, var(--teal), #38bfa0);
+    color:#04211c; width:100%; margin-top:26px;
+    box-shadow:0 10px 30px -10px rgba(94,234,212,0.5);
+  }
+  .btn-primary:disabled{ opacity:0.35; cursor:not-allowed; box-shadow:none; }
+  .btn-primary:not(:disabled):hover{ transform:translateY(-2px); }
+
+  .reg-rules{
+    margin-top:28px; text-align:left; font-size:12.5px; color:var(--text-low);
+    line-height:1.8; border-top:1px solid var(--panel-border); padding-top:18px;
+  }
+  .reg-rules b{color:var(--text-mid);}
+
+  /* ===== Test Shell ===== */
+  #testScreen{ align-items:stretch; padding:0; }
+  .test-shell{
+    width:100%; display:flex; flex-direction:column; min-height:100vh;
+  }
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 26px; gap:16px; flex-wrap:wrap;
+    border-bottom:1px solid var(--panel-border);
+    background:rgba(7,11,18,0.7);
+    backdrop-filter:blur(14px);
+    position:sticky; top:0; z-index:5;
+  }
+  .topbar-left{ display:flex; flex-direction:column; }
+  .topbar-title{ font-size:14px; font-weight:700; letter-spacing:0.5px; }
+  .topbar-sub{ font-size:11px; color:var(--text-low); font-family:var(--mono); }
+  .timer{
+    font-family:var(--mono); font-size:22px; font-weight:700; letter-spacing:2px;
+    padding:8px 18px; border-radius:10px; background:rgba(240,180,41,0.08);
+    border:1px solid rgba(240,180,41,0.3); color:var(--amber);
+  }
+  .timer.low{ color:var(--danger); border-color:rgba(255,93,108,0.4); background:rgba(255,93,108,0.08); animation:blinkTimer 1s infinite; }
+  @keyframes blinkTimer{ 50%{opacity:0.5;} }
+
+  .test-body{
+    flex:1; display:grid; grid-template-columns:1fr 300px; gap:22px;
+    padding:24px 26px 100px; max-width:1200px; margin:0 auto; width:100%;
+  }
+  @media (max-width:880px){
+    .test-body{ grid-template-columns:1fr; padding-bottom:180px; }
+    .side-panel{ order:-1; }
+  }
+
+  .q-card{ padding:30px 32px; }
+  .q-meta{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px; }
+  .q-index{ font-family:var(--mono); color:var(--teal); font-size:13px; letter-spacing:1px; }
+  .q-diff{
+    font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
+    padding:4px 10px; border-radius:20px; font-weight:700;
+  }
+  .diff-Easy, .diff-Foundation{ background:rgba(94,234,212,0.12); color:var(--teal); }
+  .diff-Medium, .diff-Application{ background:rgba(240,180,41,0.12); color:var(--amber); }
+  .diff-Hard, .diff-Advanced{ background:rgba(255,93,108,0.12); color:var(--danger); }
+
+  .q-text{ font-size:19px; line-height:1.6; margin:6px 0 26px; white-space:pre-wrap; font-weight:500; }
+
+  .options{ display:flex; flex-direction:column; gap:12px; }
+  .option{
+    display:flex; align-items:center; gap:14px;
+    padding:14px 16px; border-radius:12px;
+    background:rgba(255,255,255,0.02); border:1px solid var(--panel-border);
+    cursor:pointer; transition:border-color .15s, background .15s, transform .1s;
+  }
+  .option:hover{ border-color:rgba(94,234,212,0.4); background:rgba(94,234,212,0.04); }
+  .option.selected{ border-color:var(--teal); background:rgba(94,234,212,0.1); }
+  .opt-letter{
+    width:30px; height:30px; border-radius:8px; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:13px; font-weight:700;
+    background:rgba(255,255,255,0.05); color:var(--text-mid);
+  }
+  .option.selected .opt-letter{ background:var(--teal); color:#04211c; }
+  .opt-text{ font-size:15px; line-height:1.5; }
+
+  /* multi-select (checkbox) variant */
+  .opt-letter.checkbox-style{ border-radius:6px; border:1px solid var(--panel-border); background:transparent; }
+  .option.selected .opt-letter.checkbox-style{ background:var(--amber); color:#241a02; border-color:var(--amber); }
+  .type-hint{
+    font-size:11.5px; letter-spacing:0.5px; color:var(--text-low);
+    margin:-16px 0 20px; font-style:italic;
+  }
+
+  /* numeric / text answer input */
+  .answer-input-wrap{ display:flex; flex-direction:column; gap:10px; }
+  .answer-input{
+    width:100%; padding:16px 18px; border-radius:12px;
+    background:rgba(7,11,18,0.55); border:1px solid var(--panel-border);
+    color:var(--text-hi); font-size:16px; font-family:var(--mono); outline:none;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  .answer-input:focus{ border-color:var(--teal); box-shadow:0 0 0 3px rgba(94,234,212,0.12); }
+  textarea.answer-input{ font-family:var(--sans); min-height:120px; resize:vertical; line-height:1.6; }
+  .numeric-unit{ font-family:var(--mono); color:var(--text-mid); font-size:13px; }
+  .text-note{
+    font-size:12px; color:var(--text-low); line-height:1.6; margin-top:4px;
+    padding:10px 14px; border-radius:10px; background:rgba(240,180,41,0.06); border:1px solid rgba(240,180,41,0.2);
+  }
+
+  .status-NotScored{ background:rgba(255,255,255,0.06); color:var(--text-low); }
+
+  .q-actions{ display:flex; justify-content:space-between; align-items:center; margin-top:30px; gap:10px; flex-wrap:wrap; }
+  .btn-ghost{
+    background:transparent; border:1px solid var(--panel-border); color:var(--text-hi);
+  }
+  .btn-ghost:hover{ border-color:var(--teal); }
+  .btn-ghost:disabled{ opacity:0.3; cursor:not-allowed; }
+  .btn-mark{
+    background:rgba(240,180,41,0.1); border:1px solid rgba(240,180,41,0.35); color:var(--amber);
+  }
+  .btn-mark.active{ background:var(--amber); color:#241a02; }
+  .btn-clear{
+    background:transparent; border:1px solid var(--panel-border); color:var(--text-low); font-size:13px; padding:10px 16px;
+  }
+  .btn-submit-final{
+    background:linear-gradient(135deg, var(--danger), #c8323f); color:#2a0507;
+  }
+
+  /* ===== Side panel ===== */
+  .side-panel{ display:flex; flex-direction:column; gap:18px; }
+  .panel-block{ padding:20px; }
+  .panel-title{ font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-mid); margin-bottom:14px; }
+  .legend{ display:flex; flex-direction:column; gap:8px; font-size:12px; color:var(--text-mid); margin-bottom:16px; }
+  .legend-item{ display:flex; align-items:center; gap:8px; }
+  .dot{ width:10px; height:10px; border-radius:3px; flex:none; }
+  .dot-answered{ background:var(--teal); }
+  .dot-notanswered{ background:rgba(255,255,255,0.12); border:1px solid var(--panel-border); }
+  .dot-marked{ background:var(--amber); }
+  .dot-current{ border:2px solid #fff; background:transparent; }
+
+  .nav-grid{ display:grid; grid-template-columns:repeat(5, 1fr); gap:8px; }
+  .nav-btn{
+    aspect-ratio:1; border-radius:8px; border:1px solid var(--panel-border);
+    background:rgba(255,255,255,0.02); color:var(--text-hi);
+    font-family:var(--mono); font-size:13px; font-weight:700; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:transform .1s, border-color .15s;
+  }
+  .nav-btn:hover{ transform:translateY(-1px); }
+  .nav-btn.answered{ background:rgba(94,234,212,0.15); border-color:var(--teal); color:var(--teal); }
+  .nav-btn.marked{ background:rgba(240,180,41,0.15); border-color:var(--amber); color:var(--amber); }
+  .nav-btn.current{ outline:2px solid #fff; outline-offset:2px; }
+
+  .stat-row{ display:flex; justify-content:space-between; font-size:13px; color:var(--text-mid); padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .stat-row b{ color:var(--text-hi); }
+
+  #submitBtnSide{ width:100%; }
+
+  /* mobile bottom actions */
+  .mobile-actions{
+    display:none;
+  }
+  @media (max-width:880px){
+    .mobile-actions{
+      display:flex; gap:10px; position:fixed; bottom:0; left:0; right:0;
+      padding:14px 16px; background:rgba(7,11,18,0.92); backdrop-filter:blur(14px);
+      border-top:1px solid var(--panel-border); z-index:6;
+    }
+    .mobile-actions .btn{ flex:1; font-size:13px; padding:12px 10px; }
+  }
+
+  /* ===== Modal ===== */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(4,7,12,0.72);
+    display:flex; align-items:center; justify-content:center; z-index:50;
+    padding:20px; backdrop-filter:blur(4px);
+  }
+  .modal-box{
+    width:100%; max-width:420px; padding:32px; text-align:center;
+  }
+  .modal-icon{ font-size:32px; margin-bottom:12px; }
+  .modal-title{ font-size:19px; font-weight:700; margin-bottom:10px; }
+  .modal-text{ color:var(--text-mid); font-size:14px; line-height:1.6; margin-bottom:26px; }
+  .modal-actions{ display:flex; gap:12px; }
+  .modal-actions .btn{ flex:1; margin-top:0; }
+
+  /* ===== End / cancelled screens ===== */
+  .end-card{
+    max-width:480px; width:100%; padding:52px 40px; text-align:center;
+  }
+  .end-icon{
+    width:64px; height:64px; border-radius:50%; margin:0 auto 22px;
+    display:flex; align-items:center; justify-content:center; font-size:28px;
+    background:rgba(94,234,212,0.1); border:1px solid rgba(94,234,212,0.35); color:var(--teal);
+  }
+  .end-icon.warn{ background:rgba(255,93,108,0.1); border-color:rgba(255,93,108,0.35); color:var(--danger); }
+  .end-title{ font-size:22px; font-weight:700; margin-bottom:10px; }
+  .end-sub{ color:var(--text-mid); font-size:14px; line-height:1.7; }
+
+  .footer-note{
+    text-align:center; font-size:11px; color:var(--text-low); padding:20px; font-family:var(--mono);
+  }
+  .footer-note a{ color:var(--text-low); text-decoration:none; border-bottom:1px dotted var(--text-low); }
+  .footer-note a:hover{ color:var(--teal); border-color:var(--teal); }
+
+  /* ============ ADMIN DASHBOARD ============ */
+  #adminScreen{ align-items:flex-start; }
+  .admin-shell{ width:100%; max-width:1180px; margin:0 auto; padding:28px 20px 60px; }
+
+  .admin-login-card{ max-width:400px; margin:8vh auto; padding:40px 34px; text-align:center; }
+  .admin-login-card .reg-eyebrow{ color:var(--danger); }
+  .admin-warn{
+    margin-top:18px; padding:12px 14px; border-radius:10px; font-size:11.5px; line-height:1.6;
+    background:rgba(255,93,108,0.07); border:1px solid rgba(255,93,108,0.25); color:var(--text-mid); text-align:left;
+  }
+  #adminPassInput{
+    width:100%; padding:14px 16px; border-radius:12px; margin-top:18px;
+    background:rgba(7,11,18,0.6); border:1px solid var(--panel-border);
+    color:var(--text-hi); font-size:16px; font-family:var(--mono); outline:none;
+  }
+  #adminPassInput:focus{ border-color:var(--teal); box-shadow:0 0 0 3px rgba(94,234,212,0.12); }
+  .admin-login-error{ color:var(--danger); font-size:12.5px; margin-top:10px; min-height:16px; }
+
+  .admin-header{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:22px; }
+  .admin-title{ font-size:20px; font-weight:700; }
+  .admin-logout{ font-size:13px; padding:9px 16px; }
+
+  .admin-stats-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin-bottom:22px; }
+  .admin-stat-card{ padding:18px 20px; }
+  .admin-stat-label{ font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-mid); margin-bottom:8px; }
+  .admin-stat-value{ font-family:var(--mono); font-size:26px; font-weight:700; color:var(--teal); }
+
+  .admin-toolbar{
+    display:flex; flex-wrap:wrap; gap:10px; margin-bottom:18px; padding:16px; align-items:center;
+  }
+  .admin-toolbar input, .admin-toolbar select{
+    padding:10px 14px; border-radius:10px; background:rgba(7,11,18,0.6);
+    border:1px solid var(--panel-border); color:var(--text-hi); font-size:13px; font-family:var(--sans); outline:none;
+  }
+  .admin-toolbar input:focus, .admin-toolbar select:focus{ border-color:var(--teal); }
+  .admin-toolbar .grow{ flex:1; min-width:160px; }
+  .admin-toolbar .btn{ padding:10px 16px; font-size:13px; margin-top:0; }
+
+  .admin-table-wrap{ overflow-x:auto; border-radius:16px; }
+  table.admin-table{ width:100%; border-collapse:collapse; font-size:13.5px; min-width:1180px; }
+  table.admin-table thead th{
+    text-align:left; padding:14px 16px; font-size:11px; letter-spacing:1px; text-transform:uppercase;
+    color:var(--text-mid); border-bottom:1px solid var(--panel-border); white-space:nowrap;
+  }
+  table.admin-table tbody td{ padding:13px 16px; border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:middle; white-space:nowrap; }
+  table.admin-table tbody tr:hover{ background:rgba(94,234,212,0.04); }
+  .score-pill{ font-family:var(--mono); font-weight:700; padding:3px 10px; border-radius:20px; font-size:12.5px; }
+  .score-pos{ background:rgba(94,234,212,0.12); color:var(--teal); }
+  .score-neg{ background:rgba(255,93,108,0.12); color:var(--danger); }
+  .score-zero{ background:rgba(255,255,255,0.06); color:var(--text-mid); }
+  .btn-view{ padding:8px 14px; font-size:12.5px; }
+  .admin-empty{ text-align:center; padding:50px 20px; color:var(--text-low); font-size:13.5px; }
+
+  /* details modal */
+  .details-modal-box{ max-width:640px; text-align:left; max-height:86vh; overflow-y:auto; }
+  .details-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin:18px 0 24px; }
+  .details-item{ padding:12px 14px; border-radius:10px; background:rgba(255,255,255,0.02); border:1px solid var(--panel-border); }
+  .details-label{ font-size:10.5px; letter-spacing:1px; text-transform:uppercase; color:var(--text-mid); margin-bottom:4px; }
+  .details-value{ font-family:var(--mono); font-size:16px; font-weight:700; }
+
+  table.qa-table{ width:100%; border-collapse:collapse; font-size:13px; margin-top:6px; }
+  table.qa-table th{ text-align:left; padding:9px 10px; font-size:10.5px; letter-spacing:0.5px; text-transform:uppercase; color:var(--text-mid); border-bottom:1px solid var(--panel-border); }
+  table.qa-table td{ padding:9px 10px; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .status-tag{ font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; }
+  .status-Correct{ background:rgba(94,234,212,0.12); color:var(--teal); }
+  .status-Incorrect{ background:rgba(255,93,108,0.12); color:var(--danger); }
+  .status-Unattempted{ background:rgba(255,255,255,0.06); color:var(--text-mid); }
+
+  @media (max-width:640px){
+    .admin-toolbar .grow{ min-width:100%; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ============ REGISTRATION SCREEN ============ -->
+  <div class="screen" id="regScreen">
+    <div class="glass reg-card">
+      <div class="bracket-row">
+        <span>[ M ]</span><span>[ L ]</span><span>[ T ]</span>
+      </div>
+      <div class="reg-eyebrow">Student Registration</div>
+      <h1 class="reg-title">UNITS, DIMENSIONS,<br>ERRORS &amp; SIG. FIGS</h1>
+      <div class="reg-sub">PHYSICS TEST · 30 Questions · 40 Minutes<br>+2 correct &nbsp;·&nbsp; −1 incorrect &nbsp;·&nbsp; 0 unattempted<br><span style="font-size:11.5px; color:var(--text-low);">All 30 questions are auto-scored · Maximum = 60 marks</span></div>
+
+      <label class="field-label" for="studentName">Full Name</label>
+      <input type="text" id="studentName" placeholder="e.g. Rahul Sharma" autocomplete="off">
+
+      <div class="seat-box" id="seatBox">
+        <div class="seat-label">Seat No.</div>
+        <div class="seat-value" id="seatValue">----</div>
+        <div class="seat-name" id="seatName"></div>
+      </div>
+
+      <button class="btn btn-primary" id="startBtn" disabled>START TEST</button>
+
+      <div class="reg-rules">
+        <b>Before you begin:</b><br>
+        · The test will open in fullscreen and run for 40 minutes.<br>
+        · Switching tabs or exiting fullscreen will cancel your attempt.<br>
+        · Copy, paste and right-click are disabled during the test.<br>
+        · Your score will not be shown after submission.
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TEST SCREEN ============ -->
+  <div class="screen hidden" id="testScreen">
+    <div class="test-shell">
+      <div class="topbar">
+        <div class="topbar-left">
+          <div class="topbar-title">UNITS, DIMENSIONS, ERRORS &amp; SIG. FIGS — PHYSICS TEST</div>
+          <div class="topbar-sub" id="topbarStudent">·</div>
+        </div>
+        <div class="timer" id="timerDisplay">20:00</div>
+      </div>
+
+      <div class="test-body">
+        <div class="glass q-card">
+          <div class="q-meta">
+            <span class="q-index" id="qIndex">QUESTION 1 / 15</span>
+            <span class="q-diff diff-Foundation" id="qDiff">Foundation</span>
+          </div>
+          <div class="q-text" id="qText"></div>
+          <div class="options" id="optionsList"></div>
+
+          <div class="q-actions">
+            <button class="btn btn-ghost" id="prevBtn">← Previous</button>
+            <button class="btn btn-mark" id="markBtn">Mark for Review</button>
+            <button class="btn btn-clear" id="clearBtn">Clear Response</button>
+            <button class="btn btn-ghost" id="nextBtn">Next →</button>
+          </div>
+        </div>
+
+        <div class="side-panel">
+          <div class="glass panel-block">
+            <div class="panel-title">Legend</div>
+            <div class="legend">
+              <div class="legend-item"><span class="dot dot-answered"></span> Answered</div>
+              <div class="legend-item"><span class="dot dot-notanswered"></span> Not Answered</div>
+              <div class="legend-item"><span class="dot dot-marked"></span> Marked for Review</div>
+            </div>
+            <div class="panel-title">Navigate</div>
+            <div class="nav-grid" id="navGrid"></div>
+          </div>
+
+          <div class="glass panel-block">
+            <div class="stat-row"><span>Answered</span><b id="statAnswered">0</b></div>
+            <div class="stat-row"><span>Not Answered</span><b id="statUnanswered">15</b></div>
+            <div class="stat-row"><span>Marked for Review</span><b id="statMarked">0</b></div>
+            <button class="btn btn-submit-final" id="submitBtnSide">SUBMIT TEST</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mobile-actions">
+        <button class="btn btn-ghost" id="prevBtnM">←</button>
+        <button class="btn btn-mark" id="markBtnM">Mark</button>
+        <button class="btn btn-ghost" id="nextBtnM">→</button>
+        <button class="btn btn-submit-final" id="submitBtnM">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ END SCREENS ============ -->
+  <div class="screen hidden" id="thankYouScreen">
+    <div class="glass end-card">
+      <div class="end-icon">✓</div>
+      <div class="end-title">Thank you for attempting this test!</div>
+    </div>
+  </div>
+
+  <div class="screen hidden" id="cancelledScreen">
+    <div class="glass end-card">
+      <div class="end-icon warn">!</div>
+      <div class="end-title">Test attempt cancelled because you left the test.</div>
+      <div class="end-sub">You may return to the registration screen and start a fresh attempt.</div>
+      <button class="btn btn-primary" id="backToRegBtn">Back to Registration</button>
+    </div>
+  </div>
+
+  <div class="footer-note">Units, Dimensions, Errors &amp; Sig. Figs — Physics Test · Proctored Assessment Environment · <a href="#admin" id="adminLink">Admin</a></div>
+
+  <!-- ============ ADMIN SCREEN ============ -->
+  <div class="screen hidden" id="adminScreen">
+    <div class="admin-shell" id="adminShell">
+
+      <!-- login gate -->
+      <div class="glass admin-login-card" id="adminLoginCard">
+        <div class="reg-eyebrow">Restricted Area</div>
+        <h1 class="reg-title">Admin Dashboard</h1>
+        <div class="reg-sub">Enter the admin passphrase to view submissions.</div>
+        <input type="password" id="adminPassInput" placeholder="Admin passphrase" autocomplete="off">
+        <div class="admin-login-error" id="adminLoginError"></div>
+        <button class="btn btn-primary" id="adminLoginBtn">ENTER DASHBOARD</button>
+        <div class="admin-warn">
+          <b>Note:</b> this passphrase gate runs entirely in the browser — there is no server behind it. It keeps casual visitors out of the dashboard UI, but it is not real access control. Anyone with browser dev tools could still query the shared storage directly. Treat this as a placeholder until a real authenticated backend is wired up.
+        </div>
+      </div>
+
+      <!-- dashboard (shown after "login") -->
+      <div class="hidden" id="adminDashboard">
+        <div class="admin-header">
+          <div class="admin-title">📊 Submissions Dashboard</div>
+          <button class="btn btn-ghost admin-logout" id="adminLogoutBtn">Log out</button>
+        </div>
+
+        <div class="admin-stats-row">
+          <div class="glass admin-stat-card">
+            <div class="admin-stat-label">Total Submissions</div>
+            <div class="admin-stat-value" id="statTotalSubs">0</div>
+          </div>
+          <div class="glass admin-stat-card">
+            <div class="admin-stat-label">Average Score</div>
+            <div class="admin-stat-value" id="statAvgScore">0</div>
+          </div>
+          <div class="glass admin-stat-card">
+            <div class="admin-stat-label">Highest Score</div>
+            <div class="admin-stat-value" id="statHighScore">0</div>
+          </div>
+          <div class="glass admin-stat-card">
+            <div class="admin-stat-label">Lowest Score</div>
+            <div class="admin-stat-value" id="statLowScore">0</div>
+          </div>
+        </div>
+
+        <div class="glass admin-toolbar">
+          <input type="text" id="searchName" class="grow" placeholder="Search by student name…">
+          <input type="text" id="searchSeat" placeholder="Search by seat no…" style="width:160px;">
+          <select id="sortSelect">
+            <option value="time_desc">Newest first</option>
+            <option value="time_asc">Oldest first</option>
+            <option value="score_desc">Score: High → Low</option>
+            <option value="score_asc">Score: Low → High</option>
+          </select>
+          <select id="filterScore">
+            <option value="all">All scores</option>
+            <option value="pos">Positive score</option>
+            <option value="zero">Zero score</option>
+            <option value="neg">Negative score</option>
+          </select>
+          <button class="btn btn-primary" id="refreshBtn" style="margin-top:0;">↻ Refresh</button>
+          <button class="btn btn-ghost" id="exportAllBtn">⬇ Export All (CSV)</button>
+        </div>
+
+        <div class="glass admin-table-wrap">
+          <table class="admin-table" id="adminTable">
+            <thead>
+              <tr>
+                <th>Student Name</th>
+                <th>Seat No.</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Score</th>
+                <th>Percentage</th>
+                <th>Attempted</th>
+                <th>Correct</th>
+                <th>Incorrect</th>
+                <th>Unattempted</th>
+                <th>Time Taken</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="adminTableBody"></tbody>
+          </table>
+          <div class="admin-empty hidden" id="adminEmptyState">No submissions match your filters yet.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SUBMIT CONFIRM MODAL ============ -->
+<div class="modal-overlay hidden" id="submitModal">
+  <div class="glass modal-box">
+    <div class="modal-icon">📤</div>
+    <div class="modal-title">Submit your test?</div>
+    <div class="modal-text">Are you sure you want to submit your test? This action cannot be undone.</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="cancelSubmitBtn">Cancel</button>
+      <button class="btn btn-primary" id="confirmSubmitBtn" style="margin-top:0;">Yes, Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ADMIN: SUBMISSION DETAILS MODAL ============ -->
+<div class="modal-overlay hidden" id="detailsModal">
+  <div class="glass modal-box details-modal-box">
+    <div class="modal-title" id="detailsName">—</div>
+    <div class="details-grid">
+      <div class="details-item"><div class="details-label">Seat No.</div><div class="details-value" id="detailsSeat">—</div></div>
+      <div class="details-item"><div class="details-label">Score</div><div class="details-value" id="detailsScore">—</div></div>
+      <div class="details-item"><div class="details-label">Percentage</div><div class="details-value" id="detailsPercentage">—</div></div>
+      <div class="details-item"><div class="details-label">Attempted</div><div class="details-value" id="detailsAttempted">—</div></div>
+      <div class="details-item"><div class="details-label">Correct</div><div class="details-value" id="detailsCorrect">—</div></div>
+      <div class="details-item"><div class="details-label">Incorrect</div><div class="details-value" id="detailsIncorrect">—</div></div>
+      <div class="details-item"><div class="details-label">Unattempted</div><div class="details-value" id="detailsUnattempted">—</div></div>
+      <div class="details-item"><div class="details-label">Time Taken</div><div class="details-value" id="detailsTimeTaken">—</div></div>
+      <div class="details-item"><div class="details-label">Submitted</div><div class="details-value" id="detailsTime" style="font-size:12px;">—</div></div>
+    </div>
+    <table class="qa-table">
+      <thead><tr><th>Q#</th><th>Student Answer</th><th>Correct Answer</th><th>Status</th></tr></thead>
+      <tbody id="detailsQaBody"></tbody>
+    </table>
+    <div class="modal-actions" style="margin-top:22px;">
+      <button class="btn btn-ghost" id="closeDetailsBtn">Close</button>
+      <button class="btn btn-primary" id="exportOneBtn" style="margin-top:0;">⬇ Export This Student (CSV)</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ==========================================================
+     QUESTION BANK  — answer index kept only in JS memory
+     ========================================================== */
+  // Question "type" values:
+  //   "single"  - classic 4-option MCQ, one correct answer (answer: index)
+  //   "multi"   - checkbox MCQ, one or more correct answers (answer: array of indices)
+  //   "numeric" - free numeric entry, graded within a tolerance (answer: {value, tolerance, unit})
+  //   "text"    - free-text reflection/derivation answer, stored for admin review but
+  //               NOT auto-scored (no safe way to auto-grade a derivation/proof)
+  const questions = [
+    { type:"single", difficulty:"Foundation",
+      question:"A physical quantity Q is defined as:\nQ = A²B^(3/2) / (C√D)\nThe percentage errors in A, B, C and D are 1%, 2%, 3% and 4%, respectively. The maximum percentage error in Q is:",
+      options:["8%","9%","10%","11%"], answer:2 },
+    { type:"single", difficulty:"Foundation",
+      question:"The dimensions of a quantity X are [X] = MᵃLᵇTᶜ. If X represents energy per unit mass, then a + b + c is:",
+      options:["0","1","2","3"], answer:0 },
+    { type:"single", difficulty:"Foundation",
+      question:"A student measures the radius of a sphere as r = (2.00 ± 0.02) cm. The percentage uncertainty in its volume is approximately:",
+      options:["1%","2%","3%","6%"], answer:2 },
+    { type:"single", difficulty:"Foundation",
+      question:"Suppose the velocity of a particle is:\nv = at + b/t\nwhere a and b are constants. The dimensions of a/b are:",
+      options:["T⁻²","T²","T⁻⁴","Dimensionless"], answer:0 },
+    { type:"single", difficulty:"Foundation",
+      question:"The quantity X is calculated as:\nX = (3.00)²(2.0) / 4.00\nUsing the rules of significant figures, the correct result is:",
+      options:["4.50","4.5","4.500","4.0"], answer:1 },
+    { type:"single", difficulty:"Foundation",
+      question:"If:\nx = at² + bt + c\nand x has dimensions of length, which of the following is correct?",
+      options:["a, b and c all have dimensions of length","[a] = LT⁻², [b] = LT⁻¹, [c] = L","[a] = LT², [b] = LT, [c] = L","a, b and c are dimensionless"], answer:1 },
+    { type:"single", difficulty:"Foundation",
+      question:"A quantity is calculated as:\nY = (12.5)(0.0200) / 2.5\nHow many significant figures should be present in the final answer?",
+      options:["1","2","3","4"], answer:1 },
+    { type:"single", difficulty:"Foundation",
+      question:"If:\nF = Gm₁m₂/r²\nthen the dimensional formula of G is:",
+      options:["M⁻¹L³T⁻²","ML³T⁻²","M⁻¹L²T⁻²","ML⁻¹T⁻²"], answer:0 },
+    { type:"multi", difficulty:"Foundation",
+      question:"Which of the following quantities have the same dimensions? (Select all that apply)",
+      options:["Pressure","Energy density","Stress","Force"], answer:[0,1,2] },
+    { type:"multi", difficulty:"Foundation",
+      question:"Which of the following equations are dimensionally correct? (Select all that apply)",
+      options:["s = ut + (1/2)at²","v² = u² + 2as","E = mc","P = ρgh"], answer:[0,1,3] },
+    { type:"multi", difficulty:"Application",
+      question:"A measured quantity is:\nx = 5.00 ± 0.05\nWhich statements are correct? (Select all that apply)",
+      options:["Relative error = 0.01","Percentage error = 1%","Absolute error = 0.05","The result contains 3 significant figures"], answer:[0,1,2,3] },
+    { type:"multi", difficulty:"Application",
+      question:"If:\nZ = A²B/C³\nthen: (Select all that apply)",
+      options:["Fractional error in Z contains 2(ΔA/A)","Fractional error in Z contains ΔB/B","Fractional error in Z contains 3(ΔC/C)","Percentage error in Z is independent of errors in A, B and C"], answer:[0,1,2] },
+    { type:"multi", difficulty:"Application",
+      question:"Which of the following can be determined using dimensional analysis? (Select all that apply)",
+      options:["Dimensions of a physical constant","Whether an equation is dimensionally consistent","Numerical value of a dimensionless constant","Relationship between physical quantities up to a dimensionless constant"], answer:[0,1,3] },
+    { type:"multi", difficulty:"Application",
+      question:"Consider:\nT = 2π√(l/m)\n(as written, l is a length and m is a mass). Which statements are correct? (Select all that apply)",
+      options:["The equation is dimensionally incorrect.","If m is dimensionless, dimensions of l must be T².","Dimensional analysis cannot determine the value of 2π.","If l has dimensions L, the equation cannot represent time."], answer:[0,1,2,3] },
+    { type:"numeric", difficulty:"Application",
+      question:"The measured values are:\nA = (5.00 ± 0.02)\nB = (2.00 ± 0.01)\nIf Q = A²/B, find the maximum percentage error in Q.",
+      answer:{ value:1.3, tolerance:0.2, unit:"%" } },
+    { type:"numeric", difficulty:"Application",
+      question:"A length is measured as L = 25.0 cm with an absolute error of 0.1 cm. Find the percentage error in L².",
+      answer:{ value:0.8, tolerance:0.1, unit:"%" } },
+    { type:"numeric", difficulty:"Application",
+      question:"The radius of a cylinder is measured as r = 2.00 ± 0.02 cm and its height is h = 10.0 ± 0.1 cm. Find the maximum percentage error in its volume.",
+      answer:{ value:3, tolerance:0.3, unit:"%" } },
+    { type:"numeric", difficulty:"Application",
+      question:"A quantity is given by X = a³b²/c. The percentage errors in a, b and c are 2%, 3% and 4%, respectively. Find the maximum percentage error in X.",
+      answer:{ value:16, tolerance:1, unit:"%" } },
+    { type:"numeric", difficulty:"Application",
+      question:"The measured values are:\nx = 10.0 ± 0.2\ny = 5.0 ± 0.1\nFind the maximum percentage error in Z = x + y.",
+      answer:{ value:2, tolerance:0.3, unit:"%" } },
+    { type:"numeric", difficulty:"Application",
+      question:"If P = (A + B)/(A − B), where A = 10.0 ± 0.1 and B = 9.0 ± 0.1, find the approximate maximum percentage error in P.",
+      answer:{ value:21, tolerance:2, unit:"%" } },
+    { type:"single", difficulty:"Advanced",
+      question:"The time period T of a simple pendulum is assumed to depend on its length l, mass m and acceleration due to gravity g:\nT = K lᵃ gᵇ mᶜ\nUsing dimensional analysis, the values of a, b and c are:",
+      options:["a = 1/2, b = -1/2, c = 0","a = 1, b = -1, c = 0","a = 1/2, b = 1/2, c = 0","a = -1/2, b = 1/2, c = 1"], answer:0 },
+    { type:"single", difficulty:"Advanced",
+      question:"The energy E of a photon depends on its frequency f and Planck's constant h. Which relation is dimensionally consistent?",
+      options:["E = hf","E = h/f","E = hf²","E = h²f"], answer:0 },
+    { type:"numeric", difficulty:"Advanced",
+      question:"A quantity X is given by X = a²b/c³, where a = 2.00 ± 0.02, b = 3.00 ± 0.03, c = 4.00 ± 0.04. Calculate the maximum percentage error in X.",
+      answer:{ value:6, tolerance:0.5, unit:"%" } },
+    { type:"single", difficulty:"Advanced",
+      question:"A student measures l = (20.0 ± 0.1) cm, t = (4.0 ± 0.1) s and calculates v = l/t. Another student measures l = (20.00 ± 0.01) cm, t = (4.00 ± 0.01) s. Which student obtains v with smaller percentage uncertainty, and by approximately what factor?",
+      options:["Student 1, by a factor of about 10","Student 2, by a factor of about 10","Student 2, by a factor of about 5","Both have equal uncertainty"], answer:1 },
+    { type:"single", difficulty:"Advanced",
+      question:"A physical quantity is defined as Q = Fv/P, where F is force, v is velocity and P is power. Is Q dimensionless?",
+      options:["Yes","No"], answer:0 },
+    { type:"single", difficulty:"Advanced",
+      question:"The energy of a harmonic oscillator is proposed to be:\nE = (1/2)kx² + (1/2)mv²\nFor this to be dimensionally consistent, the dimensions of the constant k must be:",
+      options:["MT⁻²","MLT⁻²","ML²T⁻²","MT⁻¹"], answer:0 },
+    { type:"numeric", difficulty:"Advanced",
+      question:"A quantity X is calculated from X = A + B − C, where A = 12.11 ± 0.02, B = 3.2 ± 0.1, C = 5.00 ± 0.03. Find X (report only the numeric value of X, rounded to the correct number of decimal places; the appropriate absolute error is ±0.2).",
+      answer:{ value:10.3, tolerance:0.05, unit:"" } },
+    { type:"numeric", difficulty:"Advanced",
+      question:"The density of a material is calculated using ρ = m/(πr²h). The measurements are m = (50.0 ± 0.5) g, r = (2.00 ± 0.02) cm, h = (10.0 ± 0.1) cm. Find the maximum percentage error in density.",
+      answer:{ value:4, tolerance:0.5, unit:"%" } },
+    { type:"single", difficulty:"Advanced",
+      question:"A student claims that because s = ut + (1/2)at² is dimensionally correct, it must necessarily be physically correct. Which statement best describes the situation?",
+      options:["Dimensional correctness guarantees physical correctness.","Dimensional correctness only proves that the equation is dimensionally consistent.","Dimensional analysis can determine all numerical constants.","Dimensional analysis can prove the equation experimentally."], answer:1 },
+    { type:"numeric", difficulty:"Advanced",
+      question:"A physical quantity X is defined as:\nX = (A²B⁻¹)^(1/2) / (C^(3/2)D⁻¹)\nThe percentage uncertainties in A, B, C and D are respectively 1%, 2%, 3%, 4%. First simplify the powers of A, B, C and D, then apply the error-propagation rule to find the maximum percentage uncertainty in X.",
+      answer:{ value:10.5, tolerance:0.5, unit:"%" } }
+  ];
+
+  const TOTAL_Q = questions.length;
+  const TEST_SECONDS = 40 * 60;
+  const SCORED_TYPES = ["single","multi","numeric"];
+  const MAX_SCORE = questions.filter(q => SCORED_TYPES.includes(q.type)).length * 2;
+
+  /* ==========================================================
+     STATE
+     ========================================================== */
+  let studentName = "";
+  let seatNumber = null;
+  let selectedAnswers = new Array(TOTAL_Q).fill(null); // index of chosen option or null
+  let markedForReview = new Array(TOTAL_Q).fill(false);
+  let currentQ = 0;
+  let timeLeft = TEST_SECONDS;
+  let timerInterval = null;
+  let testActive = false;      // true once fullscreen+timer running
+  let submitting = false;      // guard against duplicate submits / cancels after submit
+  let testStartTime = null;    // Date.now() when the timer starts, used to compute timeTaken
+
+  /* ==========================================================
+     DOM refs
+     ========================================================== */
+  const regScreen = document.getElementById('regScreen');
+  const testScreen = document.getElementById('testScreen');
+  const thankYouScreen = document.getElementById('thankYouScreen');
+  const cancelledScreen = document.getElementById('cancelledScreen');
+
+  const nameInput = document.getElementById('studentName');
+  const seatBox = document.getElementById('seatBox');
+  const seatValue = document.getElementById('seatValue');
+  const seatNameEl = document.getElementById('seatName');
+  const startBtn = document.getElementById('startBtn');
+
+  const timerDisplay = document.getElementById('timerDisplay');
+  const topbarStudent = document.getElementById('topbarStudent');
+  const qIndex = document.getElementById('qIndex');
+  const qDiff = document.getElementById('qDiff');
+  const qText = document.getElementById('qText');
+  const optionsList = document.getElementById('optionsList');
+  const navGrid = document.getElementById('navGrid');
+
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const markBtn = document.getElementById('markBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const submitBtnSide = document.getElementById('submitBtnSide');
+
+  const prevBtnM = document.getElementById('prevBtnM');
+  const nextBtnM = document.getElementById('nextBtnM');
+  const markBtnM = document.getElementById('markBtnM');
+  const submitBtnM = document.getElementById('submitBtnM');
+
+  const statAnswered = document.getElementById('statAnswered');
+  const statUnanswered = document.getElementById('statUnanswered');
+  const statMarked = document.getElementById('statMarked');
+
+  const submitModal = document.getElementById('submitModal');
+  const cancelSubmitBtn = document.getElementById('cancelSubmitBtn');
+  const confirmSubmitBtn = document.getElementById('confirmSubmitBtn');
+  const backToRegBtn = document.getElementById('backToRegBtn');
+
+  /* ==========================================================
+     REGISTRATION — student enters Name; Seat No. is auto-generated
+     ========================================================== */
+  function generateSeatNumber(){
+    return Math.floor(1000 + Math.random() * 9000);
+  }
+
+  nameInput.addEventListener('input', () => {
+    const val = nameInput.value.trim();
+    if (val.length > 0){
+      startBtn.disabled = false;
+      if (!seatNumber){
+        seatNumber = generateSeatNumber();
+        seatValue.textContent = seatNumber;
+      }
+      seatNameEl.textContent = "Student Name: " + val;
+      seatBox.classList.add('show');
+    } else {
+      startBtn.disabled = true;
+      seatBox.classList.remove('show');
+    }
+  });
+
+  startBtn.addEventListener('click', () => {
+    const val = nameInput.value.trim();
+    if (!val) return;
+    studentName = val;
+    if (!seatNumber) seatNumber = generateSeatNumber();
+    beginTest();
+  });
+
+  /* ==========================================================
+     BEGIN TEST
+     ========================================================== */
+  function beginTest(){
+    // reset attempt state fresh
+    selectedAnswers = new Array(TOTAL_Q).fill(null);
+    markedForReview = new Array(TOTAL_Q).fill(false);
+    currentQ = 0;
+    timeLeft = TEST_SECONDS;
+    submitting = false;
+    testStartTime = Date.now();
+
+    regScreen.classList.add('hidden');
+    thankYouScreen.classList.add('hidden');
+    cancelledScreen.classList.add('hidden');
+    testScreen.classList.remove('hidden');
+
+    topbarStudent.textContent = studentName + " · Seat No. " + seatNumber;
+
+    requestFullscreenSafely();
+
+    buildNavGrid();
+    renderQuestion();
+    startTimer();
+
+    testActive = true;
+    document.body.classList.add('locked');
+  }
+
+  function requestFullscreenSafely(){
+    const el = document.documentElement;
+    const req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+    if (req){
+      req.call(el).catch(() => { /* user may block fullscreen; test still proceeds with best-effort proctoring */ });
+    }
+  }
+
+  function exitFullscreenSafely(){
+    const exit = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+    if ((document.fullscreenElement || document.webkitFullscreenElement) && exit){
+      exit.call(document).catch(() => {});
+    }
+  }
+
+  /* ==========================================================
+     TIMER
+     ========================================================== */
+  function startTimer(){
+    clearInterval(timerInterval);
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      updateTimerDisplay();
+      if (timeLeft <= 0){
+        clearInterval(timerInterval);
+        forceAutoSubmit();
+      }
+    }, 1000);
+  }
+
+  function updateTimerDisplay(){
+    const m = Math.floor(timeLeft / 60).toString().padStart(2,'0');
+    const s = (timeLeft % 60).toString().padStart(2,'0');
+    timerDisplay.textContent = m + ":" + s;
+    timerDisplay.classList.toggle('low', timeLeft <= 60);
+  }
+
+  /* ==========================================================
+     ANSWERED-STATE HELPER (works across all 4 question types)
+     ========================================================== */
+  function isAnswered(i){
+    const v = selectedAnswers[i];
+    const q = questions[i];
+    if (q.type === 'multi') return Array.isArray(v) && v.length > 0;
+    if (q.type === 'numeric' || q.type === 'text') return typeof v === 'string' && v.trim().length > 0;
+    return v !== null && v !== undefined; // single
+  }
+
+  /* ==========================================================
+     RENDER QUESTION
+     ========================================================== */
+  function renderQuestion(){
+    const q = questions[currentQ];
+    qIndex.textContent = "QUESTION " + (currentQ + 1) + " / " + TOTAL_Q;
+    qDiff.textContent = q.difficulty;
+    qDiff.className = "q-diff diff-" + q.difficulty;
+    qText.textContent = q.question;
+
+    optionsList.innerHTML = "";
+
+    if (q.type === 'single'){
+      const hint = document.createElement('div');
+      hint.className = 'type-hint';
+      hint.textContent = 'Choose one answer.';
+      optionsList.appendChild(hint);
+      q.options.forEach((opt, i) => {
+        const div = document.createElement('div');
+        div.className = 'option' + (selectedAnswers[currentQ] === i ? ' selected' : '');
+        div.innerHTML = `<span class="opt-letter">${String.fromCharCode(65+i)}</span><span class="opt-text"></span>`;
+        div.querySelector('.opt-text').textContent = opt;
+        div.addEventListener('click', () => selectSingle(i));
+        optionsList.appendChild(div);
+      });
+    } else if (q.type === 'multi'){
+      const hint = document.createElement('div');
+      hint.className = 'type-hint';
+      hint.textContent = 'Select all that apply (one or more).';
+      optionsList.appendChild(hint);
+      const chosen = Array.isArray(selectedAnswers[currentQ]) ? selectedAnswers[currentQ] : [];
+      q.options.forEach((opt, i) => {
+        const div = document.createElement('div');
+        div.className = 'option' + (chosen.includes(i) ? ' selected' : '');
+        div.innerHTML = `<span class="opt-letter checkbox-style">${chosen.includes(i) ? '✓' : ''}</span><span class="opt-text"></span>`;
+        div.querySelector('.opt-text').textContent = opt;
+        div.addEventListener('click', () => toggleMulti(i));
+        optionsList.appendChild(div);
+      });
+    } else if (q.type === 'numeric'){
+      const hint = document.createElement('div');
+      hint.className = 'type-hint';
+      hint.textContent = 'Enter your numeric answer.';
+      optionsList.appendChild(hint);
+      const wrap = document.createElement('div');
+      wrap.className = 'answer-input-wrap';
+      const unit = q.answer.unit ? ` (${q.answer.unit})` : '';
+      wrap.innerHTML = `<input type="text" inputmode="decimal" class="answer-input" id="numericInput" placeholder="Your answer${unit}">`;
+      optionsList.appendChild(wrap);
+      const input = document.getElementById('numericInput');
+      input.value = selectedAnswers[currentQ] || '';
+      input.addEventListener('input', () => { selectedAnswers[currentQ] = input.value; updateNavGrid(); updateStats(); });
+    } else if (q.type === 'text'){
+      const wrap = document.createElement('div');
+      wrap.className = 'answer-input-wrap';
+      wrap.innerHTML = `<textarea class="answer-input" id="textInput" placeholder="Type your answer / working here…"></textarea>
+        <div class="text-note">This is a reflection question. Your answer is saved for the administrator to review, but it is not auto-scored.</div>`;
+      optionsList.appendChild(wrap);
+      const input = document.getElementById('textInput');
+      input.value = selectedAnswers[currentQ] || '';
+      input.addEventListener('input', () => { selectedAnswers[currentQ] = input.value; updateNavGrid(); updateStats(); });
+    }
+
+    prevBtn.disabled = currentQ === 0;
+    prevBtnM.disabled = currentQ === 0;
+    nextBtn.textContent = currentQ === TOTAL_Q - 1 ? "Next →" : "Next →";
+    nextBtn.disabled = currentQ === TOTAL_Q - 1;
+    nextBtnM.disabled = currentQ === TOTAL_Q - 1;
+
+    const marked = markedForReview[currentQ];
+    markBtn.classList.toggle('active', marked);
+    markBtn.textContent = marked ? "✓ Marked for Review" : "Mark for Review";
+    markBtnM.classList.toggle('active', marked);
+
+    updateNavGrid();
+    updateStats();
+  }
+
+  function selectSingle(i){
+    selectedAnswers[currentQ] = i;
+    renderQuestion();
+  }
+
+  function toggleMulti(i){
+    const current = Array.isArray(selectedAnswers[currentQ]) ? selectedAnswers[currentQ].slice() : [];
+    const pos = current.indexOf(i);
+    if (pos === -1) current.push(i); else current.splice(pos, 1);
+    selectedAnswers[currentQ] = current;
+    renderQuestion();
+  }
+
+  clearBtn.addEventListener('click', () => {
+    const q = questions[currentQ];
+    selectedAnswers[currentQ] = (q.type === 'multi') ? [] : (q.type === 'numeric' || q.type === 'text') ? '' : null;
+    renderQuestion();
+  });
+
+  function goPrev(){ if (currentQ > 0){ currentQ--; renderQuestion(); } }
+  function goNext(){ if (currentQ < TOTAL_Q - 1){ currentQ++; renderQuestion(); } }
+  function toggleMark(){ markedForReview[currentQ] = !markedForReview[currentQ]; renderQuestion(); }
+
+  prevBtn.addEventListener('click', goPrev);
+  nextBtn.addEventListener('click', goNext);
+  markBtn.addEventListener('click', toggleMark);
+  prevBtnM.addEventListener('click', goPrev);
+  nextBtnM.addEventListener('click', goNext);
+  markBtnM.addEventListener('click', toggleMark);
+
+  /* ==========================================================
+     NAVIGATION GRID
+     ========================================================== */
+  function buildNavGrid(){
+    navGrid.innerHTML = "";
+    for (let i = 0; i < TOTAL_Q; i++){
+      const btn = document.createElement('button');
+      btn.className = 'nav-btn';
+      btn.textContent = i + 1;
+      btn.addEventListener('click', () => { currentQ = i; renderQuestion(); });
+      navGrid.appendChild(btn);
+    }
+  }
+
+  function updateNavGrid(){
+    const btns = navGrid.querySelectorAll('.nav-btn');
+    btns.forEach((btn, i) => {
+      btn.classList.toggle('answered', isAnswered(i));
+      btn.classList.toggle('marked', markedForReview[i]);
+      btn.classList.toggle('current', i === currentQ);
+    });
+  }
+
+  function updateStats(){
+    let answered = 0;
+    for (let i = 0; i < TOTAL_Q; i++){ if (isAnswered(i)) answered++; }
+    statAnswered.textContent = answered;
+    statUnanswered.textContent = TOTAL_Q - answered;
+    statMarked.textContent = markedForReview.filter(Boolean).length;
+  }
+
+  /* ==========================================================
+     SUBMIT FLOW
+     ========================================================== */
+  function openSubmitModal(){ submitModal.classList.remove('hidden'); }
+  function closeSubmitModal(){ submitModal.classList.add('hidden'); }
+
+  submitBtnSide.addEventListener('click', openSubmitModal);
+  submitBtnM.addEventListener('click', openSubmitModal);
+  cancelSubmitBtn.addEventListener('click', closeSubmitModal);
+  confirmSubmitBtn.addEventListener('click', () => {
+    closeSubmitModal();
+    finalizeSubmission();
+  });
+
+  function forceAutoSubmit(){
+    if (submitting) return;
+    closeSubmitModal();
+    finalizeSubmission();
+  }
+
+  function letterOf(i){ return i === null || i === undefined ? "Not Attempted" : String.fromCharCode(65 + i); }
+  function lettersOf(arr){
+    if (!Array.isArray(arr) || arr.length === 0) return "Not Attempted";
+    return arr.slice().sort((a,b) => a-b).map(i => String.fromCharCode(65 + i)).join(", ");
+  }
+  function sameSet(a, b){
+    if (a.length !== b.length) return false;
+    const as = a.slice().sort().join(",");
+    const bs = b.slice().sort().join(",");
+    return as === bs;
+  }
+  function parseNumericAnswer(str){
+    if (typeof str !== 'string') return NaN;
+    const match = str.match(/-?\d+(\.\d+)?/);
+    return match ? parseFloat(match[0]) : NaN;
+  }
+
+  function calculateScore(){
+    let correct = 0, incorrect = 0, unattempted = 0;
+    const breakdown = [];
+
+    for (let i = 0; i < TOTAL_Q; i++){
+      const q = questions[i];
+      const chosen = selectedAnswers[i];
+      let status, studentAnswerDisplay, correctAnswerDisplay;
+
+      if (q.type === 'single'){
+        studentAnswerDisplay = letterOf(chosen);
+        correctAnswerDisplay = letterOf(q.answer);
+        if (chosen === null || chosen === undefined){ unattempted++; status = "Unattempted"; }
+        else if (chosen === q.answer){ correct++; status = "Correct"; }
+        else { incorrect++; status = "Incorrect"; }
+
+      } else if (q.type === 'multi'){
+        const chosenArr = Array.isArray(chosen) ? chosen : [];
+        studentAnswerDisplay = lettersOf(chosenArr);
+        correctAnswerDisplay = lettersOf(q.answer);
+        if (chosenArr.length === 0){ unattempted++; status = "Unattempted"; }
+        else if (sameSet(chosenArr, q.answer)){ correct++; status = "Correct"; }
+        else { incorrect++; status = "Incorrect"; }
+
+      } else if (q.type === 'numeric'){
+        const raw = typeof chosen === 'string' ? chosen.trim() : '';
+        studentAnswerDisplay = raw ? raw : "Not Attempted";
+        correctAnswerDisplay = q.answer.value + (q.answer.unit || "");
+        if (!raw){ unattempted++; status = "Unattempted"; }
+        else {
+          const val = parseNumericAnswer(raw);
+          if (!isNaN(val) && Math.abs(val - q.answer.value) <= q.answer.tolerance){ correct++; status = "Correct"; }
+          else { incorrect++; status = "Incorrect"; }
+        }
+
+      } else { // text — recorded, never auto-scored
+        const raw = typeof chosen === 'string' ? chosen.trim() : '';
+        studentAnswerDisplay = raw ? raw : "Not Attempted";
+        correctAnswerDisplay = "Manual review";
+        status = "Not Scored";
+      }
+
+      breakdown.push({
+        qNo: i + 1,
+        type: q.type,
+        studentAnswer: studentAnswerDisplay,
+        correctAnswer: correctAnswerDisplay,
+        status: status
+      });
+    }
+
+    // All 30 questions are now auto-gradable, so max possible is
+    // MAX_SCORE (60) by construction — this clamp is just a safety
+    // net so the stored score can never exceed it.
+    const rawScore = (correct * 2) - (incorrect * 1);
+    const score = Math.min(rawScore, MAX_SCORE);
+    const attempted = correct + incorrect;
+    const percentage = Math.round((score / MAX_SCORE) * 1000) / 10; // one decimal place
+    return { correct, incorrect, unattempted, attempted, score, percentage, breakdown };
+  }
+
+  /**
+   * submitTestData(data)
+   * -------------------------------------------------------------
+   * Single, clearly separated function responsible for sending the
+   * submission payload to a backend.
+   *
+   * Fill in FIREBASE_CONFIG below with your own Firebase project's
+   * config (Firebase console → Project settings → General → Your apps
+   * → SDK setup and configuration) and this function will write every
+   * submission straight into a Firestore collection called
+   * "testResults" — that's the real, multi-device-safe database.
+   *
+   * Until you do that, it falls back to Claude's shared artifact
+   * storage (works only while this page is viewed inside claude.ai),
+   * and finally to a local backup queue if even that fails, so a
+   * submission is never silently lost either way.
+   * -------------------------------------------------------------
+   */
+  const RESULTS_COLLECTION = "testResults"; // Firestore collection name — used for both student writes and admin reads
+  const SUBMISSIONS_KEY = "testResults";    // fallback shared-storage key (mirrors collection name)
+
+  // -----------------------------------------------------------------
+  // FIREBASE CONFIG — paste the exact Web App config from:
+  // Firebase Console → Project settings → General → Your apps → SDK setup and configuration.
+  // Once these placeholders are replaced, the test writes to Firestore
+  // collection "testResults" and the Admin Dashboard reads from the same collection.
+  // -----------------------------------------------------------------
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyBmpu50zvmHs7JkrUDYpr2XL8qACpTxQPY",
+    authDomain: "units-and-dimensions-advanced.firebaseapp.com",
+    projectId: "units-and-dimensions-advanced",
+    storageBucket: "units-and-dimensions-advanced.firebasestorage.app",
+    messagingSenderId: "918391376879",
+    appId: "1:918391376879:web:e1dd3de1aa28b6eba4441a",
+    measurementId: "G-NGRF5BB3CQ"
+  };
+
+  function isFirebaseConfigured(){
+    return !!(FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey !== "YOUR_API_KEY");
+  }
+
+  let firebaseHandlesPromise = null;
+
+  // Lazily loads the Firebase modular SDK from the CDN and initializes
+  // the app + Firestore, only if FIREBASE_CONFIG has been filled in.
+  // Returns { db, collection, addDoc, getDocs, serverTimestamp } or null.
+  function ensureFirebase(){
+    if (!isFirebaseConfigured()) return Promise.resolve(null);
+    if (!firebaseHandlesPromise){
+      firebaseHandlesPromise = (async () => {
+        try {
+          const [{ initializeApp }, { getFirestore, collection, addDoc, getDocs, serverTimestamp }] = await Promise.all([
+            import("https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"),
+            import("https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js")
+          ]);
+          const app = initializeApp(FIREBASE_CONFIG);
+          const db = getFirestore(app);
+          return { db, collection, addDoc, getDocs, serverTimestamp };
+        } catch (e) {
+          console.error("[firebase] Failed to load/initialize Firebase SDK:", e);
+          return null;
+        }
+      })();
+    }
+    return firebaseHandlesPromise;
+  }
+
+  async function submitTestData(data){
+    // 1) Try real Firebase Firestore first, if configured. Each call
+    //    creates a brand-new document with an auto-generated ID in the
+    //    "testResults" collection — nothing is ever overwritten, and
+    //    submittedAt uses Firebase's server clock, not the student's
+    //    local computer clock.
+    try {
+      const fb = await ensureFirebase();
+      if (fb){
+        const payload = Object.assign({}, data, { submittedAt: fb.serverTimestamp() });
+        await fb.addDoc(fb.collection(fb.db, RESULTS_COLLECTION), payload);
+        return { ok: true, backend: "firebase" };
+      }
+    } catch (e) {
+      console.error("[submitTestData] Firebase write failed, falling back:", e);
+    }
+
+    // 2) Fall back to Claude's shared artifact storage (only works
+    //    while this page is viewed inside claude.ai). No server clock
+    //    is available here, so submittedAt keeps the client ISO string
+    //    already set on `data`.
+    try {
+      let existing = [];
+      try {
+        const res = await window.storage.get(SUBMISSIONS_KEY, true);
+        existing = res ? JSON.parse(res.value) : [];
+      } catch (e) {
+        existing = []; // key doesn't exist yet — first submission
+      }
+      existing.push(data);
+      await window.storage.set(SUBMISSIONS_KEY, JSON.stringify(existing), true);
+      return { ok: true, backend: "shared-storage" };
+    } catch (e) {
+      console.error("[submitTestData] Failed to write to shared storage:", e);
+    }
+
+    // 3) Last-resort local backup so a submission is never silently
+    //    lost even if both of the above are unavailable.
+    try {
+      const queueKey = "physicsTestSubmissionQueueFallback";
+      const existing = JSON.parse(localStorage.getItem(queueKey) || "[]");
+      existing.push(data);
+      localStorage.setItem(queueKey, JSON.stringify(existing));
+      return { ok: false, backend: "local-fallback" };
+    } catch (e2) {
+      return { ok: false, backend: "none" };
+    }
+  }
+
+  function formatTimeTaken(seconds){
+    const s = Math.max(0, Math.round(seconds));
+    const m = Math.floor(s / 60).toString().padStart(2,'0');
+    const sec = (s % 60).toString().padStart(2,'0');
+    return m + ":" + sec; // mm:ss
+  }
+
+  async function finalizeSubmission(){
+    if (submitting) return;
+    submitting = true;
+    testActive = false;
+
+    clearInterval(timerInterval);
+
+    const { correct, incorrect, unattempted, attempted, score, percentage, breakdown } = calculateScore();
+
+    const elapsedSeconds = testStartTime ? (Date.now() - testStartTime) / 1000 : (TEST_SECONDS - timeLeft);
+    const timeTakenSeconds = Math.min(elapsedSeconds, TEST_SECONDS);
+    const timeTaken = formatTimeTaken(timeTakenSeconds);
+
+    const submission = {
+      studentName: studentName,
+      seatNo: seatNumber,
+      score: score,              // calculated score, capped at MAX_SCORE
+      totalMarks: MAX_SCORE,     // 60
+      percentage: percentage,    // (score / 60) * 100, one decimal place
+      attempted: attempted,      // correct + incorrect
+      correct: correct,
+      incorrect: incorrect,
+      unattempted: unattempted,  // 30 - attempted
+      timeTaken: timeTaken,          // mm:ss, human-readable
+      timeTakenSeconds: Math.round(timeTakenSeconds), // raw seconds, for sorting/analysis
+      answers: selectedAnswers.slice(),
+      breakdown: breakdown,      // per-question: studentAnswer, correctAnswer, status (for the details view)
+      // submittedAt: set inside submitTestData() — Firebase server timestamp when
+      // Firestore is configured, otherwise this client-clock ISO string is used.
+      submittedAt: new Date().toISOString()
+    };
+
+    await submitTestData(submission);
+
+    exitFullscreenSafely();
+    document.body.classList.remove('locked');
+
+    testScreen.classList.add('hidden');
+    thankYouScreen.classList.remove('hidden');
+
+    // Fresh state so a re-registration starts clean.
+    resetAttemptState();
+  }
+
+  /* ==========================================================
+     ANTI-TAB-SWITCH / ANTI-CHEAT DETECTION
+     ========================================================== */
+  function cancelAttempt(){
+    if (!testActive || submitting) return;
+    testActive = false;
+
+    clearInterval(timerInterval);
+    exitFullscreenSafely();
+    document.body.classList.remove('locked');
+
+    testScreen.classList.add('hidden');
+    cancelledScreen.classList.remove('hidden');
+
+    resetAttemptState();
+  }
+
+  function resetAttemptState(){
+    selectedAnswers = new Array(TOTAL_Q).fill(null);
+    markedForReview = new Array(TOTAL_Q).fill(false);
+    currentQ = 0;
+    timeLeft = TEST_SECONDS;
+    testStartTime = null;
+    // Require fresh registration for the next attempt.
+    studentName = "";
+    seatNumber = null;
+    nameInput.value = "";
+    seatBox.classList.remove('show');
+    startBtn.disabled = true;
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && testActive && !submitting) cancelAttempt();
+  });
+
+  ['fullscreenchange','webkitfullscreenchange','msfullscreenchange'].forEach(evt => {
+    document.addEventListener(evt, () => {
+      const isFs = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+      if (!isFs && testActive && !submitting) cancelAttempt();
+    });
+  });
+
+  window.addEventListener('blur', () => {
+    // Best-effort: some browsers fire blur on fullscreen prompts too,
+    // so this is a secondary signal alongside visibilitychange.
+    if (testActive && !submitting && document.hidden) cancelAttempt();
+  });
+
+  backToRegBtn.addEventListener('click', () => {
+    cancelledScreen.classList.add('hidden');
+    regScreen.classList.remove('hidden');
+  });
+
+  /* ==========================================================
+     ANTI-CHEATING UI RESTRICTIONS (active only during test)
+     ========================================================== */
+  function isTestPhase(){
+    return !testScreen.classList.contains('hidden');
+  }
+
+  document.addEventListener('contextmenu', e => { if (isTestPhase()) e.preventDefault(); });
+  document.addEventListener('copy', e => { if (isTestPhase()) e.preventDefault(); });
+  document.addEventListener('cut', e => { if (isTestPhase()) e.preventDefault(); });
+  document.addEventListener('paste', e => { if (isTestPhase()) e.preventDefault(); });
+  document.addEventListener('selectstart', e => { if (isTestPhase()) e.preventDefault(); });
+  document.addEventListener('dragstart', e => { if (isTestPhase()) e.preventDefault(); });
+
+  document.addEventListener('keydown', (e) => {
+    if (!isTestPhase()) return;
+    const k = e.key.toLowerCase();
+    const blockedCombo =
+      (e.ctrlKey || e.metaKey) && ['c','v','x','u','s','p','f'].includes(k);
+    const blockedKey = ['F11','F12'].includes(e.key);
+    const devToolsCombo = (e.ctrlKey || e.metaKey) && e.shiftKey && ['i','j','c'].includes(k);
+    if (blockedCombo || blockedKey || devToolsCombo){
+      e.preventDefault();
+    }
+  });
+
+  /* ==========================================================
+     ADMIN DASHBOARD
+     ==========================================================
+     NOTE: this dashboard reads/writes the SAME shared storage key
+     ("testResults") that the student test writes to in
+     submitTestData() above, so it always reflects real attempts —
+     no separate/duplicate storage.
+
+     Passphrase gate below is a UI convenience only, not real
+     security — see the on-screen warning. Change ADMIN_PASSPHRASE
+     to whatever you like; just remember it is visible to anyone who
+     views this file's source.
+  ========================================================== */
+  const ADMIN_PASSPHRASE = "physics-admin-2026";
+
+  const adminScreen = document.getElementById('adminScreen');
+  const adminLoginCard = document.getElementById('adminLoginCard');
+  const adminDashboard = document.getElementById('adminDashboard');
+  const adminPassInput = document.getElementById('adminPassInput');
+  const adminLoginBtn = document.getElementById('adminLoginBtn');
+  const adminLoginError = document.getElementById('adminLoginError');
+  const adminLogoutBtn = document.getElementById('adminLogoutBtn');
+  const adminLink = document.getElementById('adminLink');
+
+  const statTotalSubs = document.getElementById('statTotalSubs');
+  const statAvgScore = document.getElementById('statAvgScore');
+  const statHighScore = document.getElementById('statHighScore');
+  const statLowScore = document.getElementById('statLowScore');
+
+  const searchName = document.getElementById('searchName');
+  const searchSeat = document.getElementById('searchSeat');
+  const sortSelect = document.getElementById('sortSelect');
+  const filterScore = document.getElementById('filterScore');
+  const refreshBtn = document.getElementById('refreshBtn');
+  const exportAllBtn = document.getElementById('exportAllBtn');
+  const adminTableBody = document.getElementById('adminTableBody');
+  const adminEmptyState = document.getElementById('adminEmptyState');
+
+  const detailsModal = document.getElementById('detailsModal');
+  const detailsName = document.getElementById('detailsName');
+  const detailsSeat = document.getElementById('detailsSeat');
+  const detailsScore = document.getElementById('detailsScore');
+  const detailsPercentage = document.getElementById('detailsPercentage');
+  const detailsAttempted = document.getElementById('detailsAttempted');
+  const detailsCorrect = document.getElementById('detailsCorrect');
+  const detailsIncorrect = document.getElementById('detailsIncorrect');
+  const detailsUnattempted = document.getElementById('detailsUnattempted');
+  const detailsTimeTaken = document.getElementById('detailsTimeTaken');
+  const detailsTime = document.getElementById('detailsTime');
+  const detailsQaBody = document.getElementById('detailsQaBody');
+  const closeDetailsBtn = document.getElementById('closeDetailsBtn');
+  const exportOneBtn = document.getElementById('exportOneBtn');
+
+  let allSubmissions = [];
+  let currentDetailsSubmission = null;
+  let adminAuthed = false;
+
+  function scoreClass(score){
+    if (score > 0) return 'score-pos';
+    if (score < 0) return 'score-neg';
+    return 'score-zero';
+  }
+
+  // Normalizes a submittedAt value into a JS Date, whether it's a
+  // Firestore server Timestamp (has .toDate()), a plain {seconds,...}
+  // object, or a client-generated ISO string (fallback-storage path).
+  function toJsDate(ts){
+    if (!ts) return null;
+    if (typeof ts.toDate === 'function') return ts.toDate();
+    if (typeof ts.seconds === 'number') return new Date(ts.seconds * 1000);
+    const d = new Date(ts);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  function fmtDateOnly(ts){
+    const d = toJsDate(ts);
+    return d ? d.toLocaleDateString() : "—";
+  }
+
+  function fmtTimeOnly(ts){
+    const d = toJsDate(ts);
+    return d ? d.toLocaleTimeString() : "—";
+  }
+
+  function fmtTime(ts){
+    const d = toJsDate(ts);
+    return d ? d.toLocaleString() : "—";
+  }
+
+  async function loadSubmissions(){
+    // 1) Try Firebase Firestore first, if configured.
+    try {
+      const fb = await ensureFirebase();
+      if (fb){
+        const snap = await fb.getDocs(fb.collection(fb.db, RESULTS_COLLECTION));
+        allSubmissions = snap.docs.map(d => d.data());
+        renderAdminStats();
+        renderAdminTable();
+        return;
+      }
+    } catch (e) {
+      console.error("[loadSubmissions] Firebase read failed, falling back:", e);
+    }
+
+    // 2) Fall back to Claude's shared artifact storage.
+    try {
+      const res = await window.storage.get(SUBMISSIONS_KEY, true);
+      allSubmissions = res ? JSON.parse(res.value) : [];
+    } catch (e){
+      allSubmissions = [];
+    }
+    renderAdminStats();
+    renderAdminTable();
+  }
+
+  function renderAdminStats(){
+    statTotalSubs.textContent = allSubmissions.length;
+    if (allSubmissions.length === 0){
+      statAvgScore.textContent = "—";
+      statHighScore.textContent = "—";
+      statLowScore.textContent = "—";
+      return;
+    }
+    const scores = allSubmissions.map(s => s.score);
+    const avg = (scores.reduce((a,b) => a+b, 0) / scores.length).toFixed(1);
+    statAvgScore.textContent = avg;
+    statHighScore.textContent = Math.max(...scores);
+    statLowScore.textContent = Math.min(...scores);
+  }
+
+  function getFilteredSortedSubmissions(){
+    let list = allSubmissions.slice();
+
+    const nameQ = searchName.value.trim().toLowerCase();
+    const seatQ = searchSeat.value.trim().toLowerCase();
+    if (nameQ) list = list.filter(s => (s.studentName || "").toLowerCase().includes(nameQ));
+    if (seatQ) list = list.filter(s => String(s.seatNo || "").toLowerCase().includes(seatQ));
+
+    const scoreFilter = filterScore.value;
+    if (scoreFilter === 'pos') list = list.filter(s => s.score > 0);
+    if (scoreFilter === 'zero') list = list.filter(s => s.score === 0);
+    if (scoreFilter === 'neg') list = list.filter(s => s.score < 0);
+
+    const sortVal = sortSelect.value;
+    list.sort((a,b) => {
+      if (sortVal === 'time_desc') return (toJsDate(b.submittedAt) || 0) - (toJsDate(a.submittedAt) || 0);
+      if (sortVal === 'time_asc') return (toJsDate(a.submittedAt) || 0) - (toJsDate(b.submittedAt) || 0);
+      if (sortVal === 'score_desc') return b.score - a.score;
+      if (sortVal === 'score_asc') return a.score - b.score;
+      return 0;
+    });
+
+    return list;
+  }
+
+  function renderAdminTable(){
+    const list = getFilteredSortedSubmissions();
+    adminTableBody.innerHTML = "";
+
+    if (list.length === 0){
+      adminEmptyState.classList.remove('hidden');
+      return;
+    }
+    adminEmptyState.classList.add('hidden');
+
+    list.forEach((s) => {
+      const realIndex = allSubmissions.indexOf(s);
+      const totalMarks = s.totalMarks ?? s.maxScore ?? MAX_SCORE;
+      const pct = (s.percentage !== undefined && s.percentage !== null) ? s.percentage : Math.round((s.score/totalMarks)*1000)/10;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${escapeHtml(s.studentName || "")}</td>
+        <td style="font-family:var(--mono);">${escapeHtml(String(s.seatNo))}</td>
+        <td>${fmtDateOnly(s.submittedAt)}</td>
+        <td>${fmtTimeOnly(s.submittedAt)}</td>
+        <td><span class="score-pill ${scoreClass(s.score)}">${s.score} / ${totalMarks}</span></td>
+        <td>${pct}%</td>
+        <td>${s.attempted ?? (s.correct + s.incorrect)}</td>
+        <td>${s.correct}</td>
+        <td>${s.incorrect}</td>
+        <td>${s.unattempted}</td>
+        <td style="font-family:var(--mono);">${escapeHtml(s.timeTaken || "—")}</td>
+        <td><button class="btn btn-ghost btn-view" data-idx="${realIndex}">View Details</button></td>
+      `;
+      adminTableBody.appendChild(tr);
+    });
+
+    adminTableBody.querySelectorAll('.btn-view').forEach(btn => {
+      btn.addEventListener('click', () => openDetails(parseInt(btn.dataset.idx, 10)));
+    });
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  [searchName, searchSeat].forEach(el => el.addEventListener('input', renderAdminTable));
+  [sortSelect, filterScore].forEach(el => el.addEventListener('change', renderAdminTable));
+  refreshBtn.addEventListener('click', loadSubmissions);
+
+  /* ---- details modal ---- */
+  function openDetails(idx){
+    const s = allSubmissions[idx];
+    if (!s) return;
+    currentDetailsSubmission = s;
+
+    const totalMarks = s.totalMarks ?? s.maxScore ?? MAX_SCORE;
+    const pct = (s.percentage !== undefined && s.percentage !== null) ? s.percentage : Math.round((s.score/totalMarks)*1000)/10;
+
+    detailsName.textContent = s.studentName;
+    detailsSeat.textContent = s.seatNo;
+    detailsScore.textContent = "Score: " + s.score + " / " + totalMarks;
+    detailsPercentage.textContent = pct + "%";
+    detailsAttempted.textContent = s.attempted ?? (s.correct + s.incorrect);
+    detailsCorrect.textContent = s.correct;
+    detailsIncorrect.textContent = s.incorrect;
+    detailsUnattempted.textContent = s.unattempted;
+    detailsTimeTaken.textContent = s.timeTaken || "—";
+    detailsTime.textContent = fmtTime(s.submittedAt);
+
+    detailsQaBody.innerHTML = "";
+    const breakdown = s.breakdown || [];
+    breakdown.forEach(row => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>Q${row.qNo}</td>
+        <td>${escapeHtml(row.studentAnswer)}</td>
+        <td>${escapeHtml(row.correctAnswer)}</td>
+        <td><span class="status-tag status-${row.status.replace(/\s+/g,'')}">${row.status}</span></td>
+      `;
+      detailsQaBody.appendChild(tr);
+    });
+
+    detailsModal.classList.remove('hidden');
+  }
+  closeDetailsBtn.addEventListener('click', () => detailsModal.classList.add('hidden'));
+
+  /* ---- CSV export ---- */
+  function downloadCsv(filename, csvContent){
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function csvEscape(val){
+    const s = String(val ?? "");
+    if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }
+
+  exportAllBtn.addEventListener('click', () => {
+    const list = getFilteredSortedSubmissions();
+    const header = ["Student Name","Seat No","Date","Time","Score","Total Marks","Percentage","Attempted","Correct","Incorrect","Unattempted","Time Taken"];
+    const rows = list.map(s => {
+      const totalMarks = s.totalMarks ?? s.maxScore ?? MAX_SCORE;
+      const pct = (s.percentage !== undefined && s.percentage !== null) ? s.percentage : Math.round((s.score/totalMarks)*1000)/10;
+      return [
+        s.studentName, s.seatNo, fmtDateOnly(s.submittedAt), fmtTimeOnly(s.submittedAt),
+        s.score, totalMarks, pct + "%", s.attempted ?? (s.correct + s.incorrect),
+        s.correct, s.incorrect, s.unattempted, s.timeTaken || ""
+      ];
+    });
+    const csv = [header, ...rows].map(r => r.map(csvEscape).join(",")).join("\n");
+    downloadCsv("physics-test-results.csv", csv);
+  });
+
+  exportOneBtn.addEventListener('click', () => {
+    if (!currentDetailsSubmission) return;
+    const s = currentDetailsSubmission;
+    const totalMarks = s.totalMarks ?? s.maxScore ?? MAX_SCORE;
+    const pct = (s.percentage !== undefined && s.percentage !== null) ? s.percentage : Math.round((s.score/totalMarks)*1000)/10;
+    const header = ["Question","Student Answer","Correct Answer","Status"];
+    const rows = (s.breakdown || []).map(r => ["Q"+r.qNo, r.studentAnswer, r.correctAnswer, r.status]);
+    const summary = [
+      ["Student Name", s.studentName],
+      ["Seat No", s.seatNo],
+      ["Date", fmtDateOnly(s.submittedAt)],
+      ["Time", fmtTimeOnly(s.submittedAt)],
+      ["Score", s.score + " / " + totalMarks],
+      ["Percentage", pct + "%"],
+      ["Attempted", s.attempted ?? (s.correct + s.incorrect)],
+      ["Correct", s.correct],
+      ["Incorrect", s.incorrect],
+      ["Unattempted", s.unattempted],
+      ["Time Taken", s.timeTaken || ""],
+      []
+    ];
+    const csv = [...summary, header, ...rows].map(r => r.map(csvEscape).join(",")).join("\n");
+    downloadCsv(`result-${s.seatNo}-${s.studentName}.csv`.replace(/\s+/g,'_'), csv);
+  });
+
+  /* ---- login / logout / routing ---- */
+  function showAdminLogin(){
+    adminLoginCard.classList.remove('hidden');
+    adminDashboard.classList.add('hidden');
+    adminAuthed = false;
+    adminPassInput.value = "";
+    adminLoginError.textContent = "";
+  }
+
+  function showAdminDashboard(){
+    adminLoginCard.classList.add('hidden');
+    adminDashboard.classList.remove('hidden');
+    adminAuthed = true;
+    loadSubmissions();
+  }
+
+  adminLoginBtn.addEventListener('click', attemptAdminLogin);
+  adminPassInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') attemptAdminLogin(); });
+
+  function attemptAdminLogin(){
+    if (adminPassInput.value === ADMIN_PASSPHRASE){
+      showAdminDashboard();
+    } else {
+      adminLoginError.textContent = "Incorrect passphrase.";
+    }
+  }
+
+  adminLogoutBtn.addEventListener('click', () => {
+    showAdminLogin();
+  });
+
+  function enterAdminRoute(){
+    // Never allow the admin route to open while a proctored attempt
+    // is in progress.
+    if (testActive) return;
+    regScreen.classList.add('hidden');
+    testScreen.classList.add('hidden');
+    thankYouScreen.classList.add('hidden');
+    cancelledScreen.classList.add('hidden');
+    adminScreen.classList.remove('hidden');
+    showAdminLogin();
+  }
+
+  function exitAdminRoute(){
+    adminScreen.classList.add('hidden');
+    regScreen.classList.remove('hidden');
+  }
+
+  window.addEventListener('hashchange', () => {
+    if (location.hash === '#admin') enterAdminRoute();
+    else exitAdminRoute();
+  });
+
+  // Initial route check on page load.
+  if (location.hash === '#admin') enterAdminRoute();
+
+})();
+</script>
+</body>
+</html>
