@@ -1216,14 +1216,15 @@
     if (!firebaseHandlesPromise){
       firebaseHandlesPromise = (async () => {
         try {
-          const [{ initializeApp }, { getFirestore, collection, addDoc, getDocs, serverTimestamp }] = await Promise.all([
+          const [{ initializeApp }, { getAuth, signInAnonymously }, { getFirestore, collection, addDoc, getDocs, serverTimestamp }] = await Promise.all([
             import("https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"),
+            import("https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js"),
             import("https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js")
           ]);
           const app = initializeApp(FIREBASE_CONFIG);
           const db = getFirestore(app);
       const auth = getAuth(app);
-      await signInAnonymously(auth);
+          await signInAnonymously(auth);
       if (!auth.currentUser) throw new Error('Anonymous authentication failed');
       firebaseAuthReady = true;
           return { db, collection, addDoc, getDocs, serverTimestamp };
@@ -1250,7 +1251,7 @@
         return { ok: true, backend: "firebase" };
       }
     } catch (e) {
-      console.error("[submitTestData] Firebase write failed, falling back:", e);
+      console.error("[submitTestData] Firebase write failed:", e);
     }
 
     // Firebase is the permanent backend. Do not silently fall back to
